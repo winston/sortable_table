@@ -31,7 +31,7 @@ module SortableTable
             if default_sort_to_most_recent? opts
               'descending'
             elsif sorting_default? opts
-              'ascending'
+              'descending'
             elsif re_sort? opts
               params[:order]
             else
