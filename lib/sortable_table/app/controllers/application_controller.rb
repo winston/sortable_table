@@ -9,33 +9,33 @@ module SortableTable
             extend ClassMethods
           end
         end
-        
+
         module ClassMethods
           def sortable_attributes(*args)
             mappings           = pop_hash_from_list(args)
             acceptable_columns = join_array_and_hash_values(args, mappings)
             define_sort_order(acceptable_columns, mappings)
           end
-          
-          def pop_hash_from_list(*args)
+
+          def pop_hash_from_list(args)
             if args.last.is_a?(Hash)
               args.pop
             else
               {}
             end
           end
-          
+
           def join_array_and_hash_values(array, hash)
-            array.collect { |each| each.to_s } + 
-              hash.values.collect { |each| each.to_s }
+            array.collect { |each| each.to_s } +
+              hash.keys.collect { |each| each.to_s }
           end
-          
+
           def define_sort_order(acceptable_columns, mappings)
             define_method(:default_sort_column) do
               acceptable_columns.first
             end
 
-            define_method(:sort_order) do |*default| 
+            define_method(:sort_order) do |*default|
               direction = params[:order] == 'ascending' ? 'asc' : 'desc'
               column    = params[:sort] || default_sort_column
               if params[:sort] && acceptable_columns.include?(column)
@@ -49,7 +49,7 @@ module SortableTable
             helper_method :sort_order, :default_sort_column
           end
         end
-        
+
         module InstanceMethods
           def default_sort_direction(default)
             if hash_with_default_key?(default)
@@ -57,20 +57,20 @@ module SortableTable
               when "ascending",  "asc" then "asc"
               when "descending", "desc" then "desc"
               else
-                raise RuntimeError, 
+                raise RuntimeError,
                   "valid :default sort orders are 'ascending' & 'descending'"
               end
             else
-              "desc"  
+              "desc"
             end
           end
-          
+
           def hash_with_default_key?(object)
-            object.any? && 
-              object.first.is_a?(Hash) && 
+            object.any? &&
+              object.first.is_a?(Hash) &&
               object.first.has_key?(:default)
           end
-          
+
           def handle_compound_sorting(column, direction)
             if column.is_a?(Array)
               column.collect { |each| "#{each} #{direction}" }.join(',')
@@ -82,7 +82,5 @@ module SortableTable
 
       end
     end
-  end  
+  end
 end
-
-
